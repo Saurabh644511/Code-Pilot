@@ -1,5 +1,5 @@
 import userModel from "../../models/user.model.js";
-import { sendTokens } from "../../utils/auth.util.js";
+import { sendAccessToken, sendTokens } from "../../utils/auth.util.js";
 import { badRequest, customError } from "../../utils/response.util.js";
 
 export const register = async (req, res) => {
@@ -32,4 +32,24 @@ export const login = async (req, res) => {
 
     sendTokens(user, 200, res)
 
+}
+
+export const refreshToken = (req, res) => {
+    const {refreshToken} = req.cookies;
+
+    if(!refreshToken) {
+        return customError(res, {}, 401, "Token is required");
+    }
+
+    try{
+        const payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+        sendAccessToken(res, payload);
+    } catch (error) {
+        return customError(res, {}, 403, "Invalid refresh token");
+    }
+}
+
+export const me = async(req, res) => {
+    const user = await userModel.findById(req.user.userId).select("-password");
+    return success(res, {user});
 }
