@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import logger from "morgan"
 import cookieParser from "cookie-parser";

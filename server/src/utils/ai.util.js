@@ -1,9 +1,10 @@
-
+import dotenv from "dotenv";
+dotenv.config();
 import axios from "axios";
 
-const finalPrompt = (message)=>{
-    return `system instruction do: ${message}`;
-}
+const finalPrompt = (message) => {
+  return `system instruction do: ${message}`;
+};
 
 async function callHuggingFace(prompt, key) {
   try {
@@ -28,8 +29,6 @@ async function callHuggingFace(prompt, key) {
       },
     );
 
-    
-
     return res.data.choices?.[0]?.message?.content || "No response";
   } catch (err) {
     if (err.response) {
@@ -43,3 +42,31 @@ async function callHuggingFace(prompt, key) {
 }
 
 export default callHuggingFace;
+
+import { GoogleGenAI } from "@google/genai";
+import { success } from "./response.util.js";
+
+// The client gets the API key from the environment variable `GEMINI_API_KEY`.
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
+
+export async function callGemini(req, res) {
+  try {
+    const prompt = req.params.chat;
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: prompt,
+    });
+    res.status(200).json({
+      success: true,
+      data: response.text,
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    })
+  }
+}

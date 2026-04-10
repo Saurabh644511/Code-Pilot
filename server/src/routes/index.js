@@ -2,7 +2,7 @@ import {Router} from "express";
 import userRoutes from "./user/index.js"
 import fileRoutes from "./file/index.js";
 import folderRoutes from "./folder/index.js"
-import callHuggingFaceApi from "../utils/ai.util.js"
+import callHuggingFaceApi, { callGemini } from "../utils/ai.util.js"
 const router = Router();
 
 router.use("/auth", userRoutes);
@@ -15,5 +15,7 @@ router.use("/ai/:chat", async(req, res) => {
     );
     res.json({response})
 })
+
+router.use("/gemini/:chat", callGemini)
 
 export default router;
